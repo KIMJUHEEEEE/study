@@ -38,6 +38,6 @@ ex) Google Cloud Platform, Naver Cloud Platform
    소프트웨어 설치, 관리 및 업그레이드와 같은 작업에 소요되는 시간과 비용을 줄임
 소프트웨어를 설치할 물리적 자원 불필요
 언제 어디서든 접근 가능
-    #### 단점
+   #### 단점
 커스터마이징이 어렵다
 ex)MS office, Gmail
