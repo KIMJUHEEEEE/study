@@ -9,6 +9,7 @@
 물리적 자원에 대한 자동화된 배포가 가능하다
 물리적 자원에 대한 안정적인 운영을 벤더에 맡길 수 있다
 물리적 자원에 대한 규모의 확장 또는 축솨가 자유롭다
+
 ex) Amazon EC2
 
 
@@ -25,7 +26,8 @@ API까지 제공하는 형태
 수많은 사용자가 동일한 개발 응용 프로그램에 액세스 가능
 #### 단점
    특정 플랫폼 서비스에 종속될 수 있다.
-ex) Google Cloud Platform, Naver Cloud Platform
+   
+   ex) Google Cloud Platform, Naver Cloud Platform
 
 
 #### 3) SaaS: Software as a Service
@@ -40,4 +42,5 @@ ex) Google Cloud Platform, Naver Cloud Platform
 언제 어디서든 접근 가능
    #### 단점
 커스터마이징이 어렵다
+
 ex)MS office, Gmail
