@@ -1,0 +1,169 @@
+###################
+# DevStack 실습 ####
+###################
+
+Oracle VM VirtualBox
+Ubuntu Server 16.04
+DevStack
+neutron(NIC 2ea)
+
+
+
+##########################################
+# obuntu Installation & Configuration ####
+##########################################
+
+01.Oracle VM VirtualBox
+ - CPU: 2ea
+ - Memory: 4GB
+ - Disk: 40Gb
+ - Network adapter1 : 호스트 전용 어댑터
+ - Network adapter2 : NAT
+ - CD-ROM : ubuntu-16.04.4-server-amd64.iso
+
+
+02.VirtualBox Setting
+ - 새로 만들기 -> 이름:obuntu -> 종류:Linux -> 버전:Ubuntu (64-bit)
+ - 메모리 크기 : 4096MB -> 지금 새 가상 하드 디스크 만들기
+ -> VDI(VirtualBox 디스크 이미지) -> 동적 할당
+ - 파일 위치 및 크기:40GB -> 만들기 <클릭>
+ - 설정 -> 시스템 -> 프로세서:2
+ - 설정 -> 저장소 -> 비어 있음 -> 가상 광 디스크 파일 선택
+                          -> ubuntu-16.04.4-server
+ - 설정 -> 네트워크 -> 어댑터 1 -> 호스트 전용 어댑터
+                 -> 어댑터 2 -> 네트워크 어댑터 사용하기 -> NAT
+ - 확인 <클릭>
+ - VirtualBox -> 시작 <클릭>
+
+
+03.obuntu 설치 시작
+ -> Language -> English
+ -> Install Ubuntu Server
+ -> Select a language -> English
+ -> Select your location -> other -> Asia -> Korea, Republic of
+ -> Configure locales -> United States
+ -> Configure the keyboard -> <no> -> English(US) -> English(US)
+ -> Configure the network -> enp0s8: ~
+                          -> Hostname:obuntu -> <Continue>
+ -> Set up users and passwords -> Full name for the new user:obuntu
+                               -> Username for your account:obuntu
+			       -> Choose a password for the new user:obuntu
+			       -> Re-enter password to verify:obuntue
+			       -> Use weak password? -> <Yes>
+ 			       -> Encrypt your home directory? -> <No>
+ -> Configure the clock -> Is this time zone correct? -> <Yes>
+ -> Partition disks -> Guided - use entire disk
+          	    -> SCSI3 (0,0,0) (sda) - 42.9GB ATA VBOX HARDDISK
+		    -> Write the changes to disks? -> <Yes>
+ -> Configure the package manager -> 입력 없이 <Continue>
+ -> Configuring tasksel -> No automatic updates
+ -> Software selection -> standard system utilities
+                       -> Virtual Machine host
+                       -> OpenSSH server
+                       -> 스페이스키로 서비스 3개 선택
+                       -> <Continue>
+ -> Install the GRUB boot loader on a hard disk -> <Yes>
+ -> Finish the installation -> <Continue>
+
+
+
+
+
+
+#################################
+# Ubuntu Linux Configuration ####
+#################################
+
+(obuntu) $ sudo su -
+
+(root) # cd
+(root) # vi /etc/network/interfaces
+auto enp0s3
+iface enp0s3 inet static
+address 192.168.56.103
+
+auto enp0s8
+iface enp0s8 inet dhcp
+
+
+
+
+
+(root) # systemctl restart networking
+
+(root) # ifconfig
+(root) # route
+
+(root) # apt update
+
+
+
+
+(root) # useradd -U -G sudo -s /bin/bash -m stack
+(root) # echo "stack ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+(root) # passwd stack		-> stack으로 변경
+(root) # su - stack
+
+(stack) $ cd
+(stack) $ sudo apt install git -y
+(stack) $ git clone https://git.openstack.org/openstack-dev/devstack
+
+
+
+
+
+
+#############################
+# ---> obuntu.ova 사용가능 ####
+# ---> putty_SSH Connect ####
+#############################
+
+
+(stack) $ rm -r devstack
+
+(stack) $ git clone -b stable/queens https://github.com/openstack-dev/devstack.git
+
+
+(stack) $ cd devstack
+
+(stack) $ vi local.conf
+[[local|localrc]]
+HOST_IP=192.168.56.103
+SERVICE_HOST=192.168.56.103
+MYSQL_HOST=192.168.56.103
+RABBIT_HOST=192.168.56.103 
+GLANCE_HOSTPORT=192.168.56.103:9292
+
+ADMIN_PASSWORD=openstack
+DATABASE_PASSWORD=openstack
+RABBIT_PASSWORD=openstack
+SERVICE_PASSWORD=openstack
+
+## Nova-Network 비활성화
+disable_service n-net
+
+## Neutron 활성화
+ENABLED_SERVICES+=,q-svc,q-dhcp,q-meta,q-agt,q-l3
+
+
+
+
+
+
+(stack) $ ./stack.sh
+
+
+* DevStack 설치 확인
+(stack) $ source userrc_early
+(stack) $ openstack endpoint list
+(stack) $ openstack image list
+
+
+* DevStack 대시보드
+ -> Chrome 웹 브라우저{실행}
+ -> http://192.168.56.103/dashboard{엔터}
+ -> 사용자 이름:admin{입력}
+ -> 암호:openstack{입력}
+ -> 로그인{클릭}
+
+

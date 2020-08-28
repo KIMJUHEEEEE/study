@@ -1,0 +1,779 @@
+#################
+# Docker 실습 ####
+#################
+
+
+
+#########################
+# Ubuntu Desktop 설치 ####
+#########################
+
+01. ubuntu-16.04.5-desktop-amd64.iso
+ - http://releases.ubuntu.com/xenial
+ - Desktop image -> 64-bit PC (AMD64) desktop image
+
+
+02. Virtual Machine 생성
+ - VirtualBox 실행
+ - 새로 만들기 -> 이름:dbuntu -> 종류:Linux -> 버전: Ubuntu(64-bit) -> 다음{클릭}
+   -> 메모리:4096 -> 다음{클릭}
+   -> 지금 새 가상 하드 디스크 만들기 -> 만들기{클릭}
+   -> VDI(VirtualBox 디스크 이미지) -> 다음{클릭}
+   -> 동적 할당 -> 다음{클릭} 
+   -> 파일 위치 및 크기:40GB -> 만들기{클릭}
+
+ - dbuntu{우클릭} -> 설정 -> 시스템 -> 프로세서 -> 2 -> 확인{클릭}
+
+ - dbuntu{우클릭} -> 설정 -> 저장소 -> 컨트롤러:IDE -> 비어있음{선택} 
+   -> 속성 -> 광학 드라이브 -> 가상 광 디스크 파일 선택...{선택}
+   -> ubuntu-16.04.5-desktop-amd64.iso -> 열기{클릭} -> 확인{클릭}
+
+ - dbuntu -> 설정 -> 네트워크 -> 다음에 연결됨 -> NAT 네트워크 -> 확인{클릭}
+
+ - 시작버튼{클릭} -> 우분투 이미지 파일로 가상머신 부팅 후 설치 시작
+
+
+
+03. Ubuntu Desktop Version 설치
+ - 한국어{선택} -> Ubuntu설치{클릭}
+ - Ubuntu 설치 중 업데이트 다운로드{선택} -> 계속{클릭}
+ - 디스크를 지우고 Ubuntu 설치{선택} -> 지금설치{클릭} -> 계속{클릭}
+ - 어디 살고 계신가요? {Seoul} -> 계속{클릭}
+ - 키보드 배치 -> 영어(미국) -> 계속{클릭}
+ - 당신은 누구십니까? 
+   -> 이름:dbuntu{입력} 
+   -> 컴퓨터이름:dbuntu-VM{입력} 
+   -> 암호선택:dbuntu{입력} -> 암호확인:dbuntu{입력} -> 계속{클릭}
+
+ - 설치완료 -> 지금 다시 시작{클릭}
+
+ - Please remove the installation medium, then press ENTER: -> {Enter}
+
+
+
+04. Ubuntu 환경설정
+ - Terminal
+ - 환경변수
+
+ - $ ifconfig(10.0.2.15 -> 10.0.2.101)
+   $ sudo su -
+
+ - IP 변경
+   # ip a
+   # nmtui
+    -> 연결편집 -> "유선 연결1" -> <삭제>
+    -> <추가> -> 이더넷 -> <생성>
+       -> 프로파일이름:enp0s3
+       -> 장치:enp0s3
+       -> IPv4설정:수동 -> <보기>
+          -> 주소:10.0.2.101/24
+          -> 게이트웨이:10.0.2.2
+          -> DNS 서버:8.8.8.8
+          -> <OK>
+       -> <종료>
+   # nmcli c up enp0s3
+   # ping 9.9.9.9
+
+ - ssh 설치
+   # apt-get install ssh -y
+   # systemctl start ssh
+
+ - 가상머신 재시작
+   # shutdown -r 0
+
+
+05. PuTTY-ssh 연결설정
+  - HostName -> 192.168.56.1
+  - Port -> 22
+  - Open
+
+ 
+
+
+
+
+############################
+# Ubuntu Desktop 환경설정 ####
+############################
+
+01. 장치 -> 게스트 확장 CD 이미지 삽입...{선택}
+  - "VBox_GAs_6.0.4"~실행하시겠습니까? -> 실행{선택}
+  - '/bin/sh'을(를) 관리자~필요합니다. -> 암호:dbuntu{입력} -> 인증{클릭}
+  - Press Return to close this window... -> Enter{엔터}
+
+02. 장치 -> 클립보드 공유 -> 호스트에서 게스트로{선택}
+
+03. 사용자의 컴퓨터에서 검색 
+   -> term{입력}
+   -> 프로그램 -> 터미널{선택}
+   -> 런처 -> 터미널{우클릭} -> 런처에 고정{선택}
+
+
+
+
+
+########################################
+# 여기까지 설정된 dbuntu.ova 파일 사용가능  ####
+########################################
+
+
+
+
+
+
+
+
+
+
+#################
+# Docker 설치 ####
+#################
+
+01. 관리자계정으로 Docker 설치
+
+$ sudo su -
+
+# apt update
+# apt install curl -y
+# curl -fsSL https://get.docker.com | sudo sh
+
+# docker version
+# docker info
+
+
+
+
+
+02. Docker 계정 추가
+
+# ls -l /run/docker.sock
+
+# usermod -aG docker dbuntu
+# cat /etc/group | grep docker
+# shutdown -r 0
+  -> System Rebooting
+
+$ id
+$ docker version
+$ docker info
+
+
+
+
+
+03. Docker Image 실습
+[Docker Image 다운로드]
+
+$ docker search oracle
+$ docker search --filter stars=30 centos
+
+$ docker images
+$ docker pull ubuntu:14.04
+$ docker pull centos:7
+$ docker images
+$ docker inspect ubuntu:14.04
+
+
+
+
+
+[Docker Image TAG 변경] - Repository Name must be lowercase
+
+$ docker tag ubuntu:14.04 my_tag:1.0
+$ docker pull httpd:2.4
+$ docker tag httpd:2.4 httpd_tag
+
+$ docker rmi httpd_tag
+$ docker rmi -f $(docker images -q)
+$ docker images
+
+
+
+
+
+[Docker Container 생성]
+
+$ docker run -it --name Test1 ubuntu
+  -> Ctrl + p + q or # exit
+
+$ docker run -d --name Ping centos /bin/ping localhost
+$ docker ps -a
+$ docker logs Ping
+
+$ docker ps -a -f name=Test1
+
+
+
+
+
+###################
+# http Web Server #
+###################
+
+$ docker run -d -it --name Web -p 8080:80 httpd
+$ docker ps -a
+$ netstat -nlp | grep 8080
+  Firefox -> localhost:8080
+
+
+
+
+
+####################################
+# Docker "mysql" Container 생성 실습 #
+####################################
+
+$ docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=rootpwd --name MySQL -d mysql:5.6
+$ docker ps -a
+
+$ docker logs MySQL
+$ docker inspect MySQL
+
+##################################
+# MySQL Container에 Table 생성 실습 #
+##################################
+
+$ docker exec -it MySQL mysql -uroot -prootpwd
+
+mysql> show databases;
+
+mysql> create database bigdata_db;
+mysql> use bigdata_db;
+
+mysql> create table rclass_tb (name char(10), tel char(20));
+mysql> show tables;
+
+mysql> insert into rclass_tb values ('R', '010'), ('Program', '011'), ('Big', '012'), ('Data', '013');
+
+mysql> select * from rclass_tb;
+
+mysql> exit
+
+
+
+
+
+[Docker Container 생성]
+
+$ docker run -it --name Test2 --add-host test.com:192.168.1.1 centos
+  (container) # cat /etc/hosts
+                -> Ctrl + p + q
+
+$ docker run -it --name Test3 -e TEST=example centos
+  (Container) # env | grep TEST
+		-> # exit 
+
+$ docker run -it --name Test4 -w /tmp/work centos
+  (Container) # pwd
+		-> # exit
+
+
+
+
+
+[Docker Container 응용(Test1 : Container_Name)]
+$ docker ps -a
+
+$ docker stats Test1
+  -> Ctrl + c
+
+$ docker stop Test1
+$ docker ps -a -f exited=0
+
+$ docker start Test1
+$ docker ps
+
+
+
+$ docker kill Test1
+$ docker restart Test1
+
+$ docker pause Test1
+$ docker ps
+$ docker unpause Test1
+
+
+
+$ docker rm Test1
+$ docker rm -f Test1
+
+$ docker ps -a
+$ docker container prune
+$ docker ps -a
+$ docker rm -f $(docker ps -a -q)
+$ docker ps -a
+
+
+
+
+
+[Docker Container 응용(Server : Container_Name)]
+
+$ docker run -it -d --name Server ubuntu
+$ docker ps
+
+$ docker attach Server
+  -> Ctrl + p + q
+
+$ docker exec -it Server bash
+  -> # exit
+
+
+$ docker top Server
+
+$ docker rename Server Web_Server
+$ docker ps
+
+$ docker inspect Web_Server | grep IPAddress
+$ docker inspect Web_Server | grep Image
+
+
+
+[파일복사]
+
+$ docker cp Web_Server:/etc/passwd ~
+$ ls
+
+$ touch Dockerfile
+$ docker cp ~/Dockerfile Web_Server:/tmp
+
+$ docker diff Web_Server
+
+
+
+
+
+[Container > Image]
+
+$ docker commit Web_Server web_image
+$ docker images
+
+
+
+[Container > File]
+
+$ docker export Web_Server > myWeb.tar
+$ ls
+
+
+
+[File > Image]
+
+$ cat myWeb.tar | docker import - test2
+$ docker images
+
+
+
+[Image > File]
+
+$ docker save -o export.tar test2
+$ ls
+
+
+
+[File > Image]
+
+$ docker rmi test2
+$ docker images
+$ docker load -i export.tar
+$ docker images
+
+
+
+
+
+[Docker Container 응용]
+
+$ docker events 
+  -> 다른 터미널에서 $ docker pull nginx
+  -> 확인 후 Ctrl + c
+
+$ docker system events
+  -> 다른 터미널에서 $ docker pull mysql
+  -> 확인 후 Ctrl + c
+
+$ docker stats
+  -> 확인 후 Ctrl + c
+
+$ docker stats --no-stream
+
+$ docker system df
+
+
+
+
+
+[Dash Board로 컨테이너 모니터링]
+
+$ docker run --volume=/:/rootfs:ro \
+--volume=/var/run:/var/run:rw \
+--volume=/sys:/sys:ro \
+--volume=/var/lib/docker/:/var/lib/docker:ro \
+--publish 8080:8080 --detach=true \
+--name cadvisor google/cadvisor
+
+  -> Firefox -> localhost:8080/containers
+
+
+
+
+
+
+
+
+
+
+[Docker Network - bridge 방식]
+
+$ docker network ls
+$ docker network inspect bridge
+
+
+$ docker network create --driver bridge myBridge
+
+$ docker run -it --name myNet_Container --net myBridge ubuntu:14.04
+(Container) # hostname -i
+            # exit
+
+$ docker network create --driver bridge --subnet 172.72.0.0/16 --ip-range 172.72.0.0/24 --gateway 172.72.0.1 myCustNet
+
+
+
+[Docker Network - host 방식]
+
+$ docker run -it --name Network_Host --net host ubuntu:14.04
+(Container) # hostname -i
+            # exit
+
+
+
+[Docker Network - none 방식]
+
+$ docker run -it --name Network_None --net none ubuntu:14.04
+(Container) # hostname -i
+            # exit
+
+$ docker inspect Network_None | grep IPAddress
+
+
+
+
+
+
+
+
+
+
+[Dockerfile 생성 및 실행]
+
+$ touch Dockerfile
+
+---> vi사용법 : i-입력모드, esc + wq-저장하고 나오기
+$ vi Dockerfile
+FROM centos:latest
+MAINTAINER dbuntu docker@korea.ac.kr
+
+
+$ docker build -t sample:1.0 ~
+$ docker images
+
+$ docker build -t sample:2.0 .
+$ docker images
+
+
+
+
+
+[Dockerfile로 Web-Server 생성 및 실행]
+
+---> vi사용법 : dG-내용모두삭제, i-입력모드, esc + wq-저장하고 나오기
+$ vi Dockerfile
+FROM centos:latest
+MAINTAINER dbuntu docker@korea.ac.kr
+RUN yum -y install httpd
+CMD /usr/sbin/httpd -D FOREGROUND
+
+
+$ docker build -t sample2 ~
+
+$ docker run -d -p 80:80 sample2
+  Firefox -> Container_IP
+          -> $ docker inspect Container_ID
+
+---> 다음 실습을 위하여 삭제
+$ docker rm -f Container_ID
+
+
+
+
+
+[Dockerfile - Volume Mount_Container to Container]
+
+---> vi사용법 : dG-내용모두삭제, i-입력모드, esc + wq-저장하고 나오기
+$ vi Dockerfile
+FROM centos:latest
+MAINTAINER dbuntu docker@korea.ac.kr
+RUN mkdir /var/log/httpd
+VOLUME /var/log/httpd
+
+
+$ docker build -t log-image ~
+
+$ docker run -it --name Log-Container log-image
+(Container) # exit
+
+
+
+---> vi사용법 : dG-내용모두삭제, i-입력모드, esc + wq-저장하고 나오기
+$ vi Dockerfile
+FROM centos:latest
+MAINTAINER dbuntu docker@korea.ac.kr
+RUN yum -y install httpd
+CMD /usr/sbin/httpd -D FOREGROUND
+
+
+$ docker build -t web-image ~
+
+$ docker run -d --name Web-Container -p 80:80 --volumes-from Log-Container web-image
+  Firefox -> Container_IP
+          -> $ docker inspect Web-Container
+
+$ docker start -ia Log-Container
+(Container) # ls -l /var/log/httpd
+(Container) # cat /var/log/httpd/access_log
+(Container) # Ctrl + p + q
+
+
+
+
+
+
+
+
+
+
+[Private Registry 생성]
+
+$ docker search registry
+$ docker pull registry
+$ docker images
+
+$ docker run -d -p 5000:5000 --name My_Registry -v /tmp/registry:/tmp/registry registry
+
+$ docker ps -a
+
+
+
+
+
+[Private Registry에 업로드하기 위한 image생성]
+
+---> vi사용법 : dG-내용모두삭제, i-입력모드, esc + wq-저장하고 나오기
+$ vi Dockerfile
+FROM centos:latest
+MAINTAINER dbuntu docker@korea.ac.kr
+RUN yum -y install httpd
+CMD /usr/sbin/httpd -D FOREGROUND
+
+
+$ docker build -t webserver ~
+
+$ docker tag webserver localhost:5000/httpd
+
+$ docker images
+$ docker push localhost:5000/httpd
+
+$ docker rmi webserver
+$ docker rmi localhost:5000/httpd
+$ docker images
+
+$ docker pull localhost:5000/httpd
+$ docker images
+
+
+
+
+
+[Public Registry에 업로드하기 위한 Image생성]
+
+$ docker run -it --name Commit_Container1 ubuntu:14.04
+(Container) # echo my first push >> test
+(Container) # Ctrl + p + q
+
+$ docker commit Commit_Container1 myimage:0.0
+
+$ docker tag myimage:0.0 도커허브레포이름/myimage:0.0
+
+$ docker images
+
+
+
+
+
+[도커허브에 로그인하여 이미지 업로드]
+
+$ docker login
+  -> Username: 도커허브 아이디 입력
+  -> Password: 도커허브 패스워드 입력
+
+$ docker push 도커허브레포이름/myimage:0.0
+  -> https://hub.docker.com 에서 확인
+  -> 검색을 위하여 Description 작성
+
+$ docker logout
+
+$ docker search 도커허브레포이름/myimage
+
+
+
+
+
+
+
+
+
+
+[Container간 링크]
+
+$ docker run -d --name dbServer postgres
+
+$ docker run -it --name appServer --link dbServer:pg centos /bin/bash
+(Container) # env | grep PG
+(Container) # cat /etc/hosts
+	      -> dbServer가 pg로 있는지 확인
+(Container) # ping pg
+(Container) # ping $PG_PORT_5432_TCP_ADDR
+(Container) # Ctrl + p + q
+
+
+
+#######################################
+# 실습내용 삭제                           #
+# $ docker ps -a                      #
+# $ docker rm -f $(docker ps -a -q)   #
+# $ docker ps -a                      #
+# $ ls                                #
+# $ rm -rf *                          #
+#######################################
+
+
+
+[Docker Compose 설치]
+
+$ sudo apt install -y docker-compose
+
+$ docker-compose version
+
+
+
+
+
+[docker-compose.yml 파일생성]
+
+--->스페이스로 파일 구조 결정(탭 사용 금지)
+$ vi docker-compose.yml
+ServerA:
+   image: httpd
+ServerB:
+   image: mysql
+   environment:
+      MYSQL_ROOT_PASSWORD: password
+
+
+$ docker-compose up -d
+
+$ docker-compose ps
+
+$ docker-compose ps -q
+
+$ docker-compose logs
+
+$ docker-compose ps
+
+$ docker-compose scale ServerA=3 ServerB=5
+
+$ docker-compose ps
+
+$ docker-compose down
+
+$ docker-compose run ServerA /bin/bash
+(Container) # exit
+
+$ docker-compose up -d
+
+$ docker-compose up -d ServerB
+
+
+$ docker-compose stop
+$ docker-compose start
+$ docker-compose restart
+$ docker-compose restart ServerA
+$ docker-compose kill -s SIGINT
+$ docker-compose down
+$ docker-compose rm
+
+
+
+
+
+
+
+
+
+
+[Docker Compose를 활용한 wordpress 시스템구성]
+
+$ vi Dockerfile
+FROM busybox
+MAINTAINER 0.1 dbuntu docker@korea.ac.kr
+VOLUME /var/lib/mysql
+
+
+$ docker build -t dataonly ~
+$ docker images dataonly
+$ docker run -it -d --name dataOnly dataonly
+$ docker ps -a
+
+
+
+$ vi docker-compose.yml
+webServer:
+   image: wordpress
+   ports:
+      - 80:80
+   links:
+   - dbServer:mysql
+dbServer:
+   image: mysql
+   volumes_from:
+      - dataOnly
+   environment:
+      MYSQL_ROOT_PASSWORD: password
+
+
+$ docker-compose up -d
+
+$ docker-compose ps
+
+$ docker start -ia dataOnly
+(Container) # ls /var/lib/mysql
+(Container) # Ctrl + p + q
+
+$ docker export dataOnly > backup.tar
+$ tar xvf backup.tar
+
+
+
+
+
+[작업내용삭제]
+
+$ docker-compose ps
+$ docker-compose down
+$ docker-compose ps
+
+$ docker ps -a
+$ docker rm -f dataOnly
+$ docker ps -a
+
+

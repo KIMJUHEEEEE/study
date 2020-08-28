@@ -1,0 +1,196 @@
+
+< virtualbox  설치하기 >
+
+https://www.virtualbox.org
+
+
+
+<베이그런트 설치 하기>
+
+1. https://www.vagrantup.com 에서 다운받기
+
+
+2. 명령프롬프트를 열고 vagrant version 실행
+
+> vagrant version
+ Installed Version： 2.2.9
+Latest Version： 2.2.9
+You're running an up-to-date version of Vagrant!
+
+
+3. 명령 프롬프트에서 적절한 디렉터리 생성하고 해당 폴더로 이동
+
+C:\> mkdir virtual-test
+
+
+C:\> cd virtual-test
+
+
+
+4. vagrant box add 명령어로 Box(우분투 64비트 버전)
+
+C:\virtual-test> vagrant box add ubuntu/trusty64
+
+=> box： Loading metadata for box 'ubuntu/trusty64'
+box： URL： https://atlas.hashicorp.com/ubuntu/trusty64
+=〉 box： Adding box 'ubuntu/trusty64' (v20160304.0.0) for provider： virtualbox
+box: Downloading： https://atlas.hashicorp.eom/ubuntu/boxes/trusty64/versions/20160304.0.0/ providers/virtualbox.box
+box： Progress： 100% (Rate： 171 k/s, Estimated time remaining：
+=> box： Successfully added box ,ubuntu/trusty64, (v20160304.0.0) for 'virtualbox'!
+
+
+5. 다운로드가 끝나면 vagrant init 명령어의 매개변수로 Box이름을 지정
+
+C:\virtual-test> vagrant init ubuntu/trusty64
+
+A 'Vagrantfile' has been placed in this directory. 
+You are now ready to 'vagrant up' your firs virtual environment! 
+Please read the comments in the Vagrantfile as well as documentation on 
+'vagrantup.com' for more information on using Vagrant
+
+
+
+6. 생성된 Vagranfile에 2개의 설정 추가(config.vm.network로 시작하는 설정과 config.vm.provider로 시작하는 설정)
+
+C:\virtual-testk> dir
+
+Vagrant.configure(2) do iconfigi
+# The most common configuration options are documented and commented below.
+# For a complete reference, please see the online documentation at
+# https://docs,vagrantup.com,
+# Every Vagrant development environment requires a box. You can search for
+# boxes at https：//atlas.hashicorp,com/search. 
+config.vm.box = "ubuntu/trusty64"
+
+# 다음 두 가지 설정을 추가
+# 호스트 os의 TCP 포트 8000번을 게스트 0S의 TCP 포트 8000번으로 포워드.
+# 이렇게 하면 게스트 0S에 http://localhost:8000/로 접근
+corrfig.vm.network "forwarded_port? guest： 8000, host： 8000
+# 초기 설정 메모리 양이 적으므로 메모리 양을 상승
+config.vm.provider ：virtualbox do |vb|
+vb.memory = 1024 
+end
+...
+end
+
+
+7. vagrant up 명령어로 새로운 가상 머신를 생성하고 실행
+
+C:\scraping-book> vagrant up
+
+Bringing machine default' up with 'virtualbox1 provider...
+=> default： Checking if box 납니ntu/trustySt is up to date…
+=> default: Mounting shared folders."
+default： /vagrant =>〔"Users/***virtual-test
+
+
+
+8. Virtualbox 관리자에 확인해 보면 가상머신이 생성된것을 확인
+
+   참고) vagrant up을 실행한 명 령 프롬프트 또는 셸을 종료해도 가상 머신은 종료되지 않음
+         가상 머신을 직접적으로 종료하려면 이투에 설명하는 vagrant halt 명령어를 사용
+
+
+
+
+
+
+
+9. SSh 접속하기
+
+
+  
+9.1 Tera Term 설치
+
+https://ko.osdn.net/projects/ttssh2/
+
+
+참고) PuTTy는 https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html 다운 받아 설치
+
+
+9.2 Tera Term을 이용해 SSH 접속하기
+    
+    호스트  : 127.0.0.1
+    TCP 포트 : 2222
+
+    [보안 경괴라는 대화상자가 나타나면 [이 컴퓨터와 키를 known-host 목록에 추가]에 체크하고 [계속]을 클릭
+
+     대화상자에 다음과 같이 입력하고 [OK]를 클릭합니다.
+     사용자이름: vagrant
+     패스워드  : vagrant
+
+
+
+10. 소프트웨어 설치
+
+# 리포지토리에서 공개하고 있는 패키지의 정보를 업데이트
+
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ sudo apt-get update
+
+
+# jq 패키지를 설치
+dc
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ sudo apt-get install -y jq
+
+
+# apt-cache search 명령어로 패키지를 검색
+
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ apt-cache search python3
+
+
+
+
+# wget upgrade
+
+
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ sudo apt-get update
+
+
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ sudo apt-get install -y wget
+
+
+
+참고) vagrant@vagrant-ubuntu-trusty-64:/vagrant$ wget http://wikibook.co.kr/wikibook.png
+      vagrant@vagrant-ubuntu-trusty-64:/vagrant$ wget http://wikibook.co.kr/
+      vagrant@vagrant-ubuntu-trusty-64:/vagrant$ wget http://wikibook.co.kr/ -O wikibook_top_html
+
+
+
+
+11. 예제 파일 가상환경에서 공유하기
+
+12.1 공유폴더 만들기
+      윈도우에서 C:\virtual-test\testing
+
+      우분트에서 /home/vagrant/testing
+
+
+12.2 vagrant 설치 폴더에 Vagrantfile 이라는 파일 편집
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+   config.vm.synced_folder "testingf", "/home/vagrant/testing"
+
+
+12.3 재실행
+     C:\virtual-test\ vagrant halt
+ 
+     C:\virtual-test\ vagrant up
+    
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+---
+ apiVersion: v1
+ kind: Pod
+ metadata:
+   name: nginx
+   labels:
+     name: nginx
+ spec:
+   containers:
+   - name: nginx
+     image: hifrodo/nginx:v1
+     ports:
+       - containerPort: 80
+---
+
+ apiVersion: v1
+ kind: Service
+ metadata:
+   name: nginx-svc
+   labels:
+     name: nginx
+ spec:
+   selector:
+     app: nginx
+   type: LoadBalancer
+   ports:
+   - name: nginx
+     port: 80
+     targetPort: 8080

@@ -1,0 +1,8 @@
+Access Key ID
+AKIAYLOHHE3ASP5XEREI
+
+Secret access Key
+dBQSVveBi6n0ja9qgOPS7zMf0pHk8h0+fGD9wbgN
+
+Console login link
+https://574332806849.signin.aws.amazon.com/console

@@ -1,0 +1,6 @@
+
+juhee-code-deploy-ec2-role , 인스턴스 arn
+arn:aws:iam::832704380685:instance-profile/juhee-code-deploy-ec2-role
+
+
+i-0b91619fea79b063d
